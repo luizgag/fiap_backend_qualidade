@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "dev": "ts-node src/main/server.ts",
+    "start": "sucrase-node src/main/server.ts",
+    "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
+    "test:unit": "npm test -- --watch -c jest-unit-config.js",
+    "test:verbose": "jest --passWithNoTests --runInBand",
+    "test:integration": "npm test -- --watch -c jest-integration-config.js ",
+    "test:staged": "npm test -- --findRelatedTests",
+    "test:ci": "npm test -- --coverage"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.10",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "inversify": "^7.1.0",
+    "jest": "^29.7.0",
+    "sqlite3": "^5.1.7",
+    "sucrase-node": "^3.35.0",
+    "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
