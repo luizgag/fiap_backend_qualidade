@@ -1,9 +1,7 @@
 import { DB } from "../infra/db/db";
 import { Post, ReadParams } from "../types";
 import { PostControllerActions } from "../types/PostControllerActions";
-import { injectable } from "inversify";
 
-@injectable() 
 export class PostController implements PostControllerActions {
     private db: DB;
 
