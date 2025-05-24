@@ -46,8 +46,9 @@ export class PostController implements PostControllerActions {
             if (!post.length) {
                 throw new Error('Post não encontrado');
             }
-            const updatedPost = await this.db.updatePost(id, data);
-            return updatedPost;
+            await this.db.updatePost(id, data);
+            const updatedPost = await this.db.queryPosts({ id });
+            return updatedPost[0];
         } catch (error) {
             console.error('Erro ao atualizar post:', error);
             throw new Error('Falha ao atualizar post');
