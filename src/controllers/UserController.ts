@@ -9,8 +9,8 @@ export class UserController implements UserControllerActions {
         this.db = new DB();
     }
 
-    async read(email: string): Promise<User | null> {
-        const user = await this.db.queryUser(email);
+    async read(identifier: string | number): Promise<User | null> {
+        const user = await this.db.queryUser(identifier);
         return user;
     }
 

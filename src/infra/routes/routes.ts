@@ -275,4 +275,10 @@ export default (app: Express) => {
             response.status(400).json({ error: error.message }).send()
         }
     })
+
+    router.get('/users/:id', async (request: Request, response: Response) => {
+        const { id } = request.params
+        const user = await new UserController().read(Number(id))
+        response.status(200).json(user).send()
+    })
 }

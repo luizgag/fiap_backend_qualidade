@@ -13,12 +13,12 @@ export class DB {
 
     async queryPosts(params: { id?: number, search?: string }): Promise<any[]> {
         let query = `
-            SELECT posts.id, posts.title, posts.content, usuarios.nome as author 
+            SELECT posts.id, posts.title, posts.content, usuarios.nome, usuarios.id as author_id, usuarios.tipo_usuario
             FROM posts
             INNER JOIN usuarios ON posts.author_id = usuarios.id
         `;
         const values = [];
-
+        console.log
         if (params.id) {
             query += ' WHERE posts.id = ?';
             values.push(params.id);
@@ -27,11 +27,13 @@ export class DB {
             values.push(`%${params.search}%`, `%${params.search}%`);
         }
 
+        
         return new Promise((resolve, reject) => {
             this.db.all(query, values, (error: Error | null, rows: any[]) => {
                 if (error) {
                     return reject(error);
                 }
+                console.log(rows)
                 resolve(rows);
             });
         });
@@ -117,6 +119,7 @@ export class DB {
                 if (error) {
                     return reject(error);
                 }
+                console.log(row)
                 if (!row) {
                     return resolve(null);
                 }
