@@ -1,5 +1,6 @@
 import express from "express"
 import sqlite from "sqlite3"
+import cookieParser from "cookie-parser"
 import setupRoutes from '../infra/routes/routes'
 import cors from 'cors'
 
@@ -19,6 +20,7 @@ class Server {
     private configureMiddlewares(): void {
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }))
+        this.app.use(cookieParser())
         this.app.use(cors({
             origin: '*',
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

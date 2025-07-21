@@ -42,15 +42,24 @@ export class PostController implements PostControllerActions {
 
     async update(id: number, data: Partial<Post>): Promise<Post> {
         try {
+            console.log('Tentando atualizar post ID:', id);
+            console.log('Dados para atualização:', data);
+
             const post = await this.db.queryPosts({ id });
+            console.log('Post encontrado:', post);
+
             if (!post.length) {
-                throw new Error('Post não encontrado');
+                throw new Error('Post não encontrado para atualização');
             }
+
             await this.db.updatePost(id, data);
             const updatedPost = await this.db.queryPosts({ id });
             return updatedPost[0];
         } catch (error) {
             console.error('Erro ao atualizar post:', error);
+            if (error.message.includes('Post não encontrado')) {
+                throw error; // Re-throw the specific error
+            }
             throw new Error('Falha ao atualizar post');
         }
     }
