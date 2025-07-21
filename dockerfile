@@ -18,7 +18,7 @@ COPY . .
 # Reconstruir módulos nativos após a cópia
 RUN npm rebuild sqlite3
 
-EXPOSE 3000
+EXPOSE 3001
 
 # Para iniciar o container, use o comando:
 # docker build -t nome-da-imagem . && docker run -p 3000:3000 nome-da-imagem

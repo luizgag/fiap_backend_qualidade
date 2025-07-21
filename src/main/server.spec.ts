@@ -14,12 +14,12 @@ describe('Conexão com o Banco de Dados e Servidor', () => {
   it('deve iniciar o servidor após conectar ao banco de dados', (done) => {
     const app = express()
     const listenSpy = jest.spyOn(app, 'listen')
-    
+
     new sqlite.Database('./database.db', (err) => {
       expect(err).toBeNull()
-      
-      app.listen(3000, () => {
-        expect(listenSpy).toHaveBeenCalledWith(3000, expect.any(Function))
+
+      app.listen(3001, '0.0.0.0', () => {
+        expect(listenSpy).toHaveBeenCalledWith(3001, '0.0.0.0', expect.any(Function))
         done()
       })
     })

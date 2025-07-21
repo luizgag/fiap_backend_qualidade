@@ -98,7 +98,7 @@ class Server {
                         console.log('Tabela "likes" criada ou já existe.');
                     }
                 })
-                
+
                 db.run(`
                     CREATE TABLE IF NOT EXISTS comentarios (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,8 +128,9 @@ class Server {
     }
 
     private startServer(): void {
-        this.app.listen(this.port, () => {
+        this.app.listen(this.port, '0.0.0.0', () => {
             console.log(`Servidor rodando na porta ${this.port}`)
+            console.log(`Acessível via Android emulator em: 10.0.2.2:${this.port}`)
         })
     }
 }
@@ -138,44 +139,44 @@ new Server()
 
 
 // // Verificar se a tabela está vazia antes de inserir dados
-                        // db.get('SELECT COUNT(*) as count FROM posts', (err, row) => {
-                        //     if (err) {
-                        //         console.error('Erro ao verificar tabela:', err.message);
-                        //         return;
-                        //     }
+// db.get('SELECT COUNT(*) as count FROM posts', (err, row) => {
+//     if (err) {
+//         console.error('Erro ao verificar tabela:', err.message);
+//         return;
+//     }
 
-                        //     if ((row as { count: number }).count === 0) {
-                        //         // Primeiro inserir usuários professores
-                        //         const stmtUsers = db.prepare('INSERT INTO usuarios (nome, email, senha, tipo_usuario) VALUES (?, ?, ?, ?)');
-                        //         const professores = [
-                        //             ['João Silva', 'joao@gmail.com', '123456', 'professor'],
-                        //             ['Maria Souza', 'maria@email.com', 'senha456', 'professor']
-                        //         ];
+//     if ((row as { count: number }).count === 0) {
+//         // Primeiro inserir usuários professores
+//         const stmtUsers = db.prepare('INSERT INTO usuarios (nome, email, senha, tipo_usuario) VALUES (?, ?, ?, ?)');
+//         const professores = [
+//             ['João Silva', 'joao@gmail.com', '123456', 'professor'],
+//             ['Maria Souza', 'maria@email.com', 'senha456', 'professor']
+//         ];
 
-                        //         professores.forEach((professor) => {
-                        //             stmtUsers.run(professor, (err) => {
-                        //                 if (err) {
-                        //                     console.error('Erro ao inserir professor:', err.message);
-                        //                 }
-                        //             });
-                        //         });
-                        //         stmtUsers.finalize();
+//         professores.forEach((professor) => {
+//             stmtUsers.run(professor, (err) => {
+//                 if (err) {
+//                     console.error('Erro ao inserir professor:', err.message);
+//                 }
+//             });
+//         });
+//         stmtUsers.finalize();
 
-                        //         // Agora inserir posts com os IDs dos professores
-                        //         const stmtPosts = db.prepare('INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)');
-                        //         const posts = [
-                        //             ['Primeiro Post', 'Este é o conteúdo do primeiro post', 1],
-                        //             ['Dicas de Programação', 'Aqui estão algumas dicas úteis para programadores', 2]
-                        //         ];
+//         // Agora inserir posts com os IDs dos professores
+//         const stmtPosts = db.prepare('INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)');
+//         const posts = [
+//             ['Primeiro Post', 'Este é o conteúdo do primeiro post', 1],
+//             ['Dicas de Programação', 'Aqui estão algumas dicas úteis para programadores', 2]
+//         ];
 
-                        //         posts.forEach((post) => {
-                        //             stmtPosts.run(post, (err) => {
-                        //                 if (err) {
-                        //                     console.error('Erro ao inserir post:', err.message);
-                        //                 }
-                        //             });
-                        //         });
-                        //         stmtPosts.finalize();
-                        //         console.log('Dados iniciais inseridos nas tabelas');
-                        //     }
-                        // });
+//         posts.forEach((post) => {
+//             stmtPosts.run(post, (err) => {
+//                 if (err) {
+//                     console.error('Erro ao inserir post:', err.message);
+//                 }
+//             });
+//         });
+//         stmtPosts.finalize();
+//         console.log('Dados iniciais inseridos nas tabelas');
+//     }
+// });
