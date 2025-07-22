@@ -95,14 +95,24 @@ export default (app: Express) => {
         try {
             const data = request.body
             const requiredFields = ["title", "author", "content"]
-            let failed = false
+            const missingFields = []
+            
             for (const field of requiredFields) {
                 if (!data[field]) {
-                    response.status(400).json({ message: `Missing Param ${field}` })
-                    failed = true
+                    missingFields.push(field)
                 }
             }
-            if (!failed) response.json(await new PostController().create(data))
+            
+            if (missingFields.length > 0) {
+                response.status(400).json({ 
+                    message: `Missing required fields: ${missingFields.join(', ')}`,
+                    missingFields 
+                })
+                return
+            }
+            
+            const result = await new PostController().create(data)
+            response.json(result)
         } catch (error) {
             console.error('Erro ao criar post:', error)
             response.status(500).json({ error: 'Erro interno do servidor' })
@@ -122,12 +132,11 @@ export default (app: Express) => {
             if (userExist) {
                 response.status(400).json({ error: 'Email já esta em uso' })
                 return
-            } else {
-                const hashed = await bcrypt.hash(senha, 10)
-                const user = await new UserController().create({ senha: hashed, email, nome, tipo_usuario })
-                response.status(201).json({ message: 'Usuário Criado', data: user })
-                return
             }
+            
+            const hashed = await bcrypt.hash(senha, 10)
+            const user = await new UserController().create({ senha: hashed, email, nome, tipo_usuario })
+            response.status(201).json({ message: 'Usuário Criado', data: user })
         } catch (error) {
             console.error('Erro ao registrar usuário:', error)
             response.status(500).json({ error: 'Erro interno do servidor' })
@@ -148,27 +157,27 @@ export default (app: Express) => {
             if (!user || !(await bcrypt.compare(senha, user.senha))) {
                 response.status(401).json({ error: 'Credenciais inválidas, e-mail ou senha incorretos' })
                 return
-            } else {
-                const accessToken = generateAccessToken(user.id, user.nome, user.tipo_usuario)
-                const refreshToken = generateRefreshToken()
-                const hashedRefresh = hashToken(refreshToken)
-        
-                const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_MS).toISOString()
-                await new SessionController().create({ 
-                    ip: request.ip || 'unknown', 
-                    expiresAt, 
-                    refreshTokenHash: hashedRefresh, 
-                    userAgent: request.headers['user-agent'] || 'unknown', 
-                    userId: user.id 
-                })
-        
-                response.cookie('refreshToken', refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: REFRESH_EXPIRES_MS
-                })
-                response.status(200).json({ accessToken })
             }
+            
+            const accessToken = generateAccessToken(user.id, user.nome, user.tipo_usuario)
+            const refreshToken = generateRefreshToken()
+            const hashedRefresh = hashToken(refreshToken)
+    
+            const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_MS).toISOString()
+            await new SessionController().create({ 
+                ip: request.ip || 'unknown', 
+                expiresAt, 
+                refreshTokenHash: hashedRefresh, 
+                userAgent: request.headers['user-agent'] || 'unknown', 
+                userId: user.id 
+            })
+    
+            response.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: REFRESH_EXPIRES_MS
+            })
+            response.status(200).json({ accessToken })
         } catch (error) {
             console.error('Erro ao fazer login:', error)
             response.status(500).json({ error: 'Erro interno do servidor' })

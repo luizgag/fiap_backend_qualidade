@@ -27,6 +27,21 @@ class Server {
             allowedHeaders: ['Content-Type', 'Authorization', 'accessToken ']
         }))
         setupRoutes(this.app as express.Express)
+        
+        // Global error handler - must be last
+        this.app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+            console.error('Global error handler:', error)
+            
+            // Check if response was already sent
+            if (res.headersSent) {
+                return next(error)
+            }
+            
+            res.status(500).json({ 
+                error: 'Erro interno do servidor',
+                message: process.env.NODE_ENV === 'development' ? error.message : 'Algo deu errado'
+            })
+        })
     }
 
     private setupDatabase(): void {
