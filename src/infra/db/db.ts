@@ -83,11 +83,19 @@ export class DB {
             fields.push('content = ?');
             values.push(post.content);
         }
-        if (post.author_id) {
+        if (post.author_id !== undefined) {
+            // Validate that author_id is a number
+            if (typeof post.author_id !== 'number' || isNaN(post.author_id)) {
+                throw new Error('author_id deve ser um número válido');
+            }
             fields.push('author_id = ?');
             values.push(post.author_id);
         }
-        if (post.author) {
+        if (post.author !== undefined) {
+            // Validate that author is a number
+            if (typeof post.author !== 'number' || isNaN(post.author)) {
+                throw new Error('author deve ser um número válido (ID do usuário)');
+            }
             fields.push('author_id = ?');
             values.push(post.author);
         }

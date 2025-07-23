@@ -84,10 +84,54 @@ export default (app: Express) => {
         try {
             const { id } = request.params
             const data = request.body
+            
+            // Validate author field if present
+            if (data.author !== undefined) {
+                if (typeof data.author === 'string') {
+                    // Try to convert string to number
+                    const authorId = parseInt(data.author, 10);
+                    if (isNaN(authorId)) {
+                        response.status(400).json({ 
+                            error: 'Campo author deve ser um ID numérico válido do usuário' 
+                        });
+                        return;
+                    }
+                    data.author = authorId;
+                } else if (typeof data.author !== 'number') {
+                    response.status(400).json({ 
+                        error: 'Campo author deve ser um ID numérico válido do usuário' 
+                    });
+                    return;
+                }
+            }
+            
+            // Validate author_id field if present
+            if (data.author_id !== undefined) {
+                if (typeof data.author_id === 'string') {
+                    const authorId = parseInt(data.author_id, 10);
+                    if (isNaN(authorId)) {
+                        response.status(400).json({ 
+                            error: 'Campo author_id deve ser um ID numérico válido do usuário' 
+                        });
+                        return;
+                    }
+                    data.author_id = authorId;
+                } else if (typeof data.author_id !== 'number') {
+                    response.status(400).json({ 
+                        error: 'Campo author_id deve ser um ID numérico válido do usuário' 
+                    });
+                    return;
+                }
+            }
+            
             response.json(await new PostController().update(Number(id), data))
         } catch (error) {
             console.error('Erro ao atualizar post:', error)
-            response.status(500).json({ error: 'Erro interno do servidor' })
+            if (error.message.includes('deve ser um número válido')) {
+                response.status(400).json({ error: error.message });
+            } else {
+                response.status(500).json({ error: 'Erro interno do servidor' });
+            }
         }
     })
 

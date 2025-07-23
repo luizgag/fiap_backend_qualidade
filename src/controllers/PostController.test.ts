@@ -235,5 +235,31 @@ describe('PostController Integration Tests', () => {
             expect(finalPost[0].content).toBe('Sequential Update Content');
             expect(finalPost[0].author_id).toBe(testUserId);
         });
+
+        it('should reject invalid author data types and preserve post', async () => {
+            // Try to update with invalid author (string instead of number)
+            await expect(postController.update(testPostId, { 
+                title: 'Should Not Update',
+                author: 'invalid_string' as any 
+            })).rejects.toThrow('author deve ser um número válido');
+            
+            // Verify post still exists and wasn't corrupted
+            const posts = await postController.read({ id: testPostId }) as unknown as PostFromDB[];
+            expect(posts).toHaveLength(1);
+            expect(posts[0].title).toBe('Original Test Post'); // Should still have original title
+            expect(posts[0].author_id).toBe(testUserId); // Should still have original author
+        });
+
+        it('should reject NaN author values', async () => {
+            // Try to update with NaN author
+            await expect(postController.update(testPostId, { 
+                author: NaN 
+            })).rejects.toThrow('author deve ser um número válido');
+            
+            // Verify post still exists
+            const posts = await postController.read({ id: testPostId }) as unknown as PostFromDB[];
+            expect(posts).toHaveLength(1);
+            expect(posts[0].author_id).toBe(testUserId);
+        });
     });
 });
