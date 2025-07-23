@@ -57,7 +57,8 @@ export class PostController implements PostControllerActions {
             return updatedPost[0];
         } catch (error) {
             console.error('Erro ao atualizar post:', error);
-            if (error.message.includes('Post não encontrado')) {
+            if (error.message.includes('Post não encontrado') ||
+                error.message.includes('Nenhum campo fornecido para atualização')) {
                 throw error; // Re-throw the specific error
             }
             throw new Error('Falha ao atualizar post');

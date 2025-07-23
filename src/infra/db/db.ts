@@ -71,7 +71,7 @@ export class DB {
         });
     }
 
-    async updatePost(id: number, post: { title?: string, content?: string, author?: number, author_id?: number, materia?: string }): Promise<void> {
+    async updatePost(id: number, post: { title?: string, content?: string, author?: number, author_id?: number }): Promise<void> {
         const fields = [];
         const values = [];
 
@@ -90,10 +90,6 @@ export class DB {
         if (post.author) {
             fields.push('author_id = ?');
             values.push(post.author);
-        }
-        if (post.materia) {
-            fields.push('materia = ?');
-            values.push(post.materia);
         }
 
         if (fields.length === 0) {
