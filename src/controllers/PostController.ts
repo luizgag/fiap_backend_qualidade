@@ -31,9 +31,12 @@ export class PostController implements PostControllerActions {
 
     async delete(id: number): Promise<Post> {
         try {
-            const post = await this.db.queryPosts({ id });
+            const posts = await this.db.queryPosts({ id });
+            if (!posts.length) {
+                throw new Error('Post não encontrado para exclusão');
+            }
             await this.db.deletePost(id);
-            return post[0] ?? post;
+            return posts[0];
         } catch (error) {
             console.error('Erro ao deletar post:', error);
             throw new Error('Falha ao deletar post');

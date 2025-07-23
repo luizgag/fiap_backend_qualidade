@@ -353,8 +353,8 @@ export default (app: Express) => {
 
             const novoComentario = await new CommentController().create({
                 post_id: Number(postId),
-                author_id: userId,
-                content: comentario
+                user_id: userId,
+                comentario: comentario
             })
             response.status(201).json(novoComentario)
         } catch (error) {
@@ -394,8 +394,7 @@ export default (app: Express) => {
             const userId = session.userId
 
             const comentarioAtualizado = await new CommentController().update(Number(id), {
-                id: userId,
-                content: comentario
+                comentario: comentario
             })
             response.status(200).json(comentarioAtualizado)
         } catch (error) {

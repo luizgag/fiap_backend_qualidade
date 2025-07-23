@@ -69,7 +69,6 @@ class Server {
                         title TEXT NOT NULL,
                         content TEXT NOT NULL,
                         author_id INTEGER NOT NULL,
-                        materia TEXT CHECK(materia IN ('Matemática', 'Química', 'Física', 'Biologia', 'História', 'Geografia', 'Português', 'Inglês', 'Sociologia', 'Filosofia', 'Educação Física', 'Artes', 'Literatura', 'Espanhol')),
                         FOREIGN KEY (author_id) REFERENCES usuarios(id)
                     )
                 `, (err) => {

@@ -1,6 +1,7 @@
 import sqlite from 'sqlite3'
 import { db } from '../../main/server';
 import { User } from '../../types/User';
+import { Post } from '../../types/Post';
 import { Comment } from '../../types/Comment';
 import { Like } from '../../types/Like';
 
@@ -11,14 +12,13 @@ export class DB {
         this.db = db
     }
 
-    async queryPosts(params: { id?: number, search?: string }): Promise<any[]> {
+    async queryPosts(params: { id?: number, search?: string }): Promise<Post[]> {
         let query = `
-            SELECT posts.id, posts.title, posts.content, usuarios.nome, usuarios.id as author_id, usuarios.tipo_usuario
+            SELECT posts.id, posts.title, posts.content, posts.author_id, posts.materia
             FROM posts
-            INNER JOIN usuarios ON posts.author_id = usuarios.id
         `;
         const values = [];
-        console.log
+
         if (params.id) {
             query += ' WHERE posts.id = ?';
             values.push(params.id);
@@ -27,22 +27,20 @@ export class DB {
             values.push(`%${params.search}%`, `%${params.search}%`);
         }
 
-
         return new Promise((resolve, reject) => {
             this.db.all(query, values, (error: Error | null, rows: any[]) => {
                 if (error) {
                     return reject(error);
                 }
-                console.log(rows)
                 resolve(rows);
             });
         });
     }
 
-    async createPost(post: { title: string, content: string, author: number }): Promise<number> {
-        const query = 'INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)';
-        const values = [post.title, post.content, post.author];
-        console.log(values)
+    async createPost(post: Omit<Post, 'id'>): Promise<number> {
+        const query = 'INSERT INTO posts (title, content, author_id, materia) VALUES (?, ?, ?, ?)';
+        const values = [post.title, post.content, post.author_id, post.materia || null];
+
         return new Promise((resolve, reject) => {
             this.db.run(query, values, function (error: Error | null) {
                 if (error) {
@@ -71,7 +69,7 @@ export class DB {
         });
     }
 
-    async updatePost(id: number, post: { title?: string, content?: string, author?: number, author_id?: number }): Promise<void> {
+    async updatePost(id: number, post: Partial<Omit<Post, 'id'>>): Promise<void> {
         const fields = [];
         const values = [];
 
@@ -91,13 +89,9 @@ export class DB {
             fields.push('author_id = ?');
             values.push(post.author_id);
         }
-        if (post.author !== undefined) {
-            // Validate that author is a number
-            if (typeof post.author !== 'number' || isNaN(post.author)) {
-                throw new Error('author deve ser um número válido (ID do usuário)');
-            }
-            fields.push('author_id = ?');
-            values.push(post.author);
+        if (post.materia !== undefined) {
+            fields.push('materia = ?');
+            values.push(post.materia);
         }
 
         if (fields.length === 0) {
@@ -107,16 +101,11 @@ export class DB {
         values.push(id);
         const query = `UPDATE posts SET ${fields.join(', ')} WHERE id = ?`;
 
-        console.log('Update query:', query);
-        console.log('Update values:', values);
-
         return new Promise((resolve, reject) => {
             this.db.run(query, values, function (error: Error | null) {
                 if (error) {
-                    console.error('Erro na query de update:', error);
                     return reject(error);
                 }
-                console.log('Linhas afetadas:', this.changes);
                 if (this.changes > 0) {
                     resolve();
                 } else {
@@ -269,9 +258,9 @@ export class DB {
         });
     }
 
-    async createComment(comment: { post_id: number, author_id: number, content: string }): Promise<number> {
-        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, created_at) VALUES (?, ?, ?, datetime("now"))';
-        const values = [comment.post_id, comment.author_id, comment.content];
+    async createComment(comment: Omit<Comment, 'id' | 'created_at'>): Promise<number> {
+        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, resposta_id, created_at) VALUES (?, ?, ?, ?, datetime("now"))';
+        const values = [comment.post_id, comment.user_id, comment.comentario, comment.resposta_id || null];
 
         return new Promise((resolve, reject) => {
             this.db.run(query, values, function (error: Error | null) {
@@ -285,10 +274,9 @@ export class DB {
 
     async queryCommentsByPostId(postId: number): Promise<Comment[]> {
         const query = `
-            SELECT comentarios.id, comentarios.post_id, comentarios.user_id as author_id, 
-                   comentarios.comentario as content, comentarios.created_at, usuarios.nome as author_name
+            SELECT comentarios.id, comentarios.post_id, comentarios.user_id, 
+                   comentarios.comentario, comentarios.resposta_id, comentarios.created_at
             FROM comentarios
-            INNER JOIN usuarios ON comentarios.user_id = usuarios.id
             WHERE comentarios.post_id = ?
             ORDER BY comentarios.created_at DESC
         `;
@@ -305,7 +293,7 @@ export class DB {
     }
 
     async deleteComment(id: number): Promise<Comment> {
-        const query = 'SELECT id, post_id, user_id as author_id, comentario as content, created_at FROM comentarios WHERE id = ?';
+        const query = 'SELECT id, post_id, user_id, comentario, resposta_id, created_at FROM comentarios WHERE id = ?';
         const deleteQuery = 'DELETE FROM comentarios WHERE id = ?';
         const values = [id];
 
@@ -332,9 +320,13 @@ export class DB {
         const fields = [];
         const values = [];
 
-        if (data.content) {
+        if (data.comentario) {
             fields.push('comentario = ?');
-            values.push(data.content);
+            values.push(data.comentario);
+        }
+        if (data.resposta_id !== undefined) {
+            fields.push('resposta_id = ?');
+            values.push(data.resposta_id);
         }
 
         if (fields.length === 0) {
@@ -343,7 +335,7 @@ export class DB {
 
         values.push(id);
         const query = `UPDATE comentarios SET ${fields.join(', ')} WHERE id = ?`;
-        const getQuery = 'SELECT id, post_id, user_id as author_id, comentario as content, created_at FROM comentarios WHERE id = ?';
+        const getQuery = 'SELECT id, post_id, user_id, comentario, resposta_id, created_at FROM comentarios WHERE id = ?';
 
         return new Promise((resolve, reject) => {
             this.db.run(query, values, (error: Error | null) => {
