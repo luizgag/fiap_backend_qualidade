@@ -12,7 +12,7 @@ The application currently has misalignments between API models and database tabl
 
 #### Acceptance Criteria
 
-1. WHEN a Post is created or retrieved THEN the API model SHALL include all database fields (id, title, content, author_id, materia)
+1. WHEN a Post is created or retrieved THEN the API model SHALL include all database fields (id, title, content, author_id)
 2. WHEN a Post model is used THEN it SHALL use consistent property names that match database columns
 3. IF a Post has an author_id field THEN the API model SHALL reflect this instead of using 'author'
 
@@ -45,13 +45,3 @@ The application currently has misalignments between API models and database tabl
 1. WHEN database methods are called THEN they SHALL use the same type definitions as API models
 2. WHEN partial updates are performed THEN the type system SHALL enforce correct property names
 3. IF a database field is renamed THEN the corresponding API model SHALL be updated to maintain type safety
-
-### Requirement 5
-
-**User Story:** As a developer, I want all missing database fields to be represented in API models, so that the full data structure is available for API operations.
-
-#### Acceptance Criteria
-
-1. WHEN a Post model is defined THEN it SHALL include the 'materia' field from the database
-2. WHEN models are created THEN they SHALL include all optional fields like 'id' and timestamps
-3. WHEN database tables have foreign key relationships THEN the API models SHALL reflect these relationships appropriately

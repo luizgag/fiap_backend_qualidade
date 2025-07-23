@@ -24,7 +24,6 @@ export interface Post {
     title: string;
     content: string;
     author_id: number;     // Change from 'author' to match DB column
-    materia?: string;      // Add missing materia field from DB
 }
 ```
 
@@ -66,7 +65,6 @@ export type User = {
 #### Post Queries
 - Remove field aliasing in SELECT statements
 - Return `author_id` instead of mapping to different field names
-- Include `materia` field in all Post queries
 - Add `id` field to create operations return type
 
 #### Comment Queries
@@ -97,7 +95,6 @@ CREATE TABLE posts (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     author_id INTEGER NOT NULL,
-    materia TEXT CHECK(materia IN (...)),
     FOREIGN KEY (author_id) REFERENCES usuarios(id)
 );
 

@@ -14,7 +14,7 @@ export class DB {
 
     async queryPosts(params: { id?: number, search?: string }): Promise<Post[]> {
         let query = `
-            SELECT posts.id, posts.title, posts.content, posts.author_id, posts.materia
+            SELECT posts.id, posts.title, posts.content, posts.author_id
             FROM posts
         `;
         const values = [];
@@ -38,8 +38,8 @@ export class DB {
     }
 
     async createPost(post: Omit<Post, 'id'>): Promise<number> {
-        const query = 'INSERT INTO posts (title, content, author_id, materia) VALUES (?, ?, ?, ?)';
-        const values = [post.title, post.content, post.author_id, post.materia || null];
+        const query = 'INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?, ?)';
+        const values = [post.title, post.content, post.author_id];
 
         return new Promise((resolve, reject) => {
             this.db.run(query, values, function (error: Error | null) {
@@ -88,10 +88,6 @@ export class DB {
             }
             fields.push('author_id = ?');
             values.push(post.author_id);
-        }
-        if (post.materia !== undefined) {
-            fields.push('materia = ?');
-            values.push(post.materia);
         }
 
         if (fields.length === 0) {

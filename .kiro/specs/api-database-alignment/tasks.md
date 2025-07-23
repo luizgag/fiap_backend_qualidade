@@ -6,7 +6,7 @@
 
 
 
-  - Update Post interface to include id, change author to author_id, and add materia field
+  - Update Post interface to include id, change author to author_id
   - Update Comment interface to change author_id to user_id and content to comentario, add resposta_id
   - Ensure all models include optional id and timestamp fields from database
   - _Requirements: 1.1, 1.2, 1.3, 2.1, 2.2, 5.1, 5.2_
@@ -21,7 +21,6 @@
 
 
     - Update queryPosts method to return author_id instead of mapping fields
-    - Include materia field in Post query results
     - Ensure id field is properly returned in all Post operations
     - _Requirements: 1.1, 1.2, 3.1, 5.1_
 
@@ -73,7 +72,6 @@
   - [ ] 5.1 Update PostController tests to use aligned field names
     - Modify test data to use author_id instead of author
     - Update test assertions to expect aligned field names in responses
-    - Add tests for new materia field handling
     - _Requirements: 1.1, 1.2, 1.3, 5.1_
 
   - [ ] 5.2 Update CommentController tests to use aligned field names
