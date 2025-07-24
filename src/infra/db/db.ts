@@ -38,7 +38,7 @@ export class DB {
     }
 
     async createPost(post: Omit<Post, 'id'>): Promise<number> {
-        const query = 'INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?, ?)';
+        const query = 'INSERT INTO posts (title, content, author_id) VALUES (?, ?, ?)';
         const values = [post.title, post.content, post.author_id];
 
         return new Promise((resolve, reject) => {
@@ -255,7 +255,7 @@ export class DB {
     }
 
     async createComment(comment: Omit<Comment, 'id' | 'created_at'>): Promise<number> {
-        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, resposta_id, created_at) VALUES (?, ?, ?, ?, datetime("now"))';
+        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, created_at) VALUES (?, ?, ?, datetime("now"))';
         const values = [comment.post_id, comment.user_id, comment.comentario];
 
         return new Promise((resolve, reject) => {
@@ -320,7 +320,7 @@ export class DB {
             fields.push('comentario = ?');
             values.push(data.comentario);
         }
-        
+
         if (fields.length === 0) {
             throw new Error('Nenhum campo fornecido para atualização');
         }
