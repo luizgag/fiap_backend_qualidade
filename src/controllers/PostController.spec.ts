@@ -39,7 +39,7 @@ describe('PostController', () => {
 
     describe('create', () => {
         it('deve criar um novo post e retornar o ID', async () => {
-            const newPost: Post = { title: 'Novo', content: 'Conteúdo', author: 'Autor' };
+            const newPost: Post = { title: 'Novo', content: 'Conteúdo', author_id: 1 };
             mockDb.createPost.mockResolvedValue(1);
 
             const result = await postController.create(newPost);
@@ -48,7 +48,7 @@ describe('PostController', () => {
         });
 
         it('deve lançar erro ao falhar a criação', async () => {
-            const newPost: Post = { title: 'Novo', content: 'Conteúdo', author: 'Autor' };
+            const newPost: Post = { title: 'Novo', content: 'Conteúdo', author_id: 1 };
             mockDb.createPost.mockRejectedValue(new Error('Erro de banco'));
 
             await expect(postController.create(newPost)).rejects.toThrow('Falha ao criar post');
@@ -78,7 +78,7 @@ describe('PostController', () => {
     describe('update', () => {
         it('deve atualizar um post existente', async () => {
             const mockPost = { id: 1, title: 'Teste', content: 'Conteúdo' };
-            const updatedData = { title: 'Atualizado', content: 'Conteúdo', author: 'Autor' };
+            const updatedData = { title: 'Atualizado', content: 'Conteúdo', author_id: 1 };
             mockDb.queryPosts.mockResolvedValue([mockPost]);
             mockDb.updatePost.mockResolvedValue({ ...mockPost, ...updatedData });
 

@@ -78,7 +78,7 @@ describe('PostController Integration Tests', () => {
         const testPost: Post = {
             title: 'Original Test Post',
             content: 'Original content for testing',
-            author: testUserId
+            author_id: testUserId
         };
         
         testPostId = await postController.create(testPost);
@@ -126,7 +126,7 @@ describe('PostController Integration Tests', () => {
             };
             const anotherUserId = Number(await db.createUser(anotherUser));
             
-            const updateData = { author: anotherUserId };
+            const updateData = { author_id: anotherUserId };
             
             const updatedPost = await postController.update(testPostId, updateData) as unknown as PostFromDB;
             
@@ -174,7 +174,7 @@ describe('PostController Integration Tests', () => {
             const initialPost: Post = {
                 title: 'CRUD Test Post',
                 content: 'Initial content for CRUD testing',
-                author: testUserId
+                author_id: testUserId
             };
             
             const createdPostId = await postController.create(initialPost);
@@ -240,7 +240,7 @@ describe('PostController Integration Tests', () => {
             // Try to update with invalid author (string instead of number)
             await expect(postController.update(testPostId, { 
                 title: 'Should Not Update',
-                author: 'invalid_string' as any 
+                author_id: 'invalid_string' as any 
             })).rejects.toThrow('author deve ser um número válido');
             
             // Verify post still exists and wasn't corrupted
@@ -253,7 +253,7 @@ describe('PostController Integration Tests', () => {
         it('should reject NaN author values', async () => {
             // Try to update with NaN author
             await expect(postController.update(testPostId, { 
-                author: NaN 
+                author_id: NaN 
             })).rejects.toThrow('author deve ser um número válido');
             
             // Verify post still exists

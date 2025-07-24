@@ -56,20 +56,35 @@
 
 
 
-  - [ ] 3.2 Update CommentController to use aligned Comment model
+  - [x] 3.2 Update CommentController to use aligned Comment model
+
+
+
+
+
     - Modify methods to work with user_id and comentario fields
     - Remove field mapping between controller and database layer
     - Ensure consistent field usage throughout comment operations
     - _Requirements: 2.1, 2.2, 3.2_
 
-- [ ] 4. Update controller action interfaces to reflect aligned models
+- [x] 4. Update controller action interfaces to reflect aligned models
+
+
+
+
+
   - Update PostControllerActions interface to use aligned Post model
   - Update CommentControllerActions interface to use aligned Comment model
   - Ensure interface method signatures match updated implementations
   - _Requirements: 4.1, 4.2_
 
-- [ ] 5. Update unit tests to work with aligned models
+- [-] 5. Update unit tests to work with aligned models
+
+
+
   - [ ] 5.1 Update PostController tests to use aligned field names
+
+
     - Modify test data to use author_id instead of author
     - Update test assertions to expect aligned field names in responses
     - _Requirements: 1.1, 1.2, 1.3, 5.1_
