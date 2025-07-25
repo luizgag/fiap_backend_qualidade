@@ -255,8 +255,8 @@ export class DB {
     }
 
     async createComment(comment: Omit<Comment, 'id' | 'created_at'>): Promise<number> {
-        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, created_at) VALUES (?, ?, ?, datetime("now"))';
-        const values = [comment.post_id, comment.user_id, comment.comentario];
+        const query = 'INSERT INTO comentarios (post_id, user_id, comentario, resposta_id, created_at) VALUES (?, ?, ?, ?, datetime("now"))';
+        const values = [comment.post_id, comment.author_id, comment.comentario, comment.resposta_id || null];
 
         return new Promise((resolve, reject) => {
             this.db.run(query, values, function (error: Error | null) {

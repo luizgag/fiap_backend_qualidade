@@ -241,7 +241,7 @@ describe('PostController Integration Tests', () => {
             await expect(postController.update(testPostId, { 
                 title: 'Should Not Update',
                 author_id: 'invalid_string' as any 
-            })).rejects.toThrow('author deve ser um número válido');
+            })).rejects.toThrow('author_id deve ser um número válido');
             
             // Verify post still exists and wasn't corrupted
             const posts = await postController.read({ id: testPostId }) as unknown as PostFromDB[];
@@ -254,7 +254,7 @@ describe('PostController Integration Tests', () => {
             // Try to update with NaN author
             await expect(postController.update(testPostId, { 
                 author_id: NaN 
-            })).rejects.toThrow('author deve ser um número válido');
+            })).rejects.toThrow('author_id deve ser um número válido');
             
             // Verify post still exists
             const posts = await postController.read({ id: testPostId }) as unknown as PostFromDB[];

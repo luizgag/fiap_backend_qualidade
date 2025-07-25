@@ -3,6 +3,7 @@ import sqlite from "sqlite3"
 import cookieParser from "cookie-parser"
 import setupRoutes from '../infra/routes/routes'
 import cors from 'cors'
+import { setupSwagger } from '../infra/swagger/swagger'
 
 export const db = new sqlite.Database('./database.db')
 
@@ -27,6 +28,7 @@ class Server {
             allowedHeaders: ['Content-Type', 'Authorization', 'accessToken ']
         }))
         setupRoutes(this.app as express.Express)
+        setupSwagger(this.app as express.Express)
         
         // Global error handler - must be last
         this.app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

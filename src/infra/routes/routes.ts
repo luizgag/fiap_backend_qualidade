@@ -41,6 +41,36 @@ export default (app: Express) => {
     })
     app.use('/api', router)
 
+    /**
+     * @swagger
+     * /posts:
+     *   get:
+     *     summary: Lista todos os posts
+     *     tags: [Posts]
+     *     security:
+     *       - AccessToken: []
+     *     responses:
+     *       200:
+     *         description: Lista de posts retornada com sucesso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Post'
+     *       401:
+     *         description: Token de acesso não fornecido ou inválido
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.get('/posts', async (request: Request, response: Response) => {
         try {
             response.json(await new PostController().read({}))
@@ -50,6 +80,43 @@ export default (app: Express) => {
         }
     })
 
+    /**
+     * @swagger
+     * /posts/search/{search}:
+     *   get:
+     *     summary: Busca posts por termo de pesquisa
+     *     tags: [Posts]
+     *     security:
+     *       - AccessToken: []
+     *     parameters:
+     *       - in: path
+     *         name: search
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Termo de pesquisa para filtrar posts
+     *     responses:
+     *       200:
+     *         description: Posts encontrados com sucesso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 $ref: '#/components/schemas/Post'
+     *       401:
+     *         description: Token de acesso não fornecido ou inválido
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.get('/posts/search/:search', async (request: Request, response: Response) => {
         try {
             const { search } = request.params
@@ -60,6 +127,47 @@ export default (app: Express) => {
         }
     })
 
+    /**
+     * @swagger
+     * /posts/{id}:
+     *   get:
+     *     summary: Busca um post específico por ID
+     *     tags: [Posts]
+     *     security:
+     *       - AccessToken: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: integer
+     *         description: ID único do post
+     *     responses:
+     *       200:
+     *         description: Post encontrado com sucesso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Post'
+     *       401:
+     *         description: Token de acesso não fornecido ou inválido
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       404:
+     *         description: Post não encontrado
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.get('/posts/:id', async (request: Request, response: Response) => {
         try {
             const { id } = request.params
@@ -135,10 +243,71 @@ export default (app: Express) => {
         }
     })
 
+    /**
+     * @swagger
+     * /posts:
+     *   post:
+     *     summary: Cria um novo post
+     *     tags: [Posts]
+     *     security:
+     *       - AccessToken: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               title:
+     *                 type: string
+     *                 description: Título do post
+     *               content:
+     *                 type: string
+     *                 description: Conteúdo do post
+     *               author:
+     *                 type: integer
+     *                 description: ID do autor do post
+     *             required:
+     *               - title
+     *               - content
+     *               - author
+     *     responses:
+     *       200:
+     *         description: Post criado com sucesso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Post'
+     *       400:
+     *         description: Campos obrigatórios ausentes
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                 missingFields:
+     *                   type: array
+     *                   items:
+     *                     type: string
+     *       401:
+     *         description: Token de acesso não fornecido ou inválido
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.post('/posts', async (request: Request, response: Response) => {
         try {
             const data = request.body
-            const requiredFields = ["title", "author", "content"]
+            const requiredFields = ["title", "author_id", "content"]
             const missingFields = []
             
             for (const field of requiredFields) {
@@ -163,6 +332,45 @@ export default (app: Express) => {
         }
     })
 
+    /**
+     * @swagger
+     * /register:
+     *   post:
+     *     summary: Registra um novo usuário
+     *     tags: [Autenticação]
+     *     security: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/RegisterRequest'
+     *     responses:
+     *       201:
+     *         description: Usuário criado com sucesso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   example: "Usuário Criado"
+     *                 data:
+     *                   $ref: '#/components/schemas/User'
+     *       400:
+     *         description: Falha na validação ou email já em uso
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.post('/register', async (request: Request, response: Response) => {
         try {
             const { body } = request
@@ -187,6 +395,51 @@ export default (app: Express) => {
         }
     })
 
+    /**
+     * @swagger
+     * /login:
+     *   post:
+     *     summary: Autentica um usuário
+     *     tags: [Autenticação]
+     *     security: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/LoginRequest'
+     *     responses:
+     *       200:
+     *         description: Login realizado com sucesso
+     *         headers:
+     *           Set-Cookie:
+     *             description: Cookie com refresh token
+     *             schema:
+     *               type: string
+     *               example: refreshToken=abc123; HttpOnly; Path=/
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/LoginResponse'
+     *       400:
+     *         description: Falha na validação dos dados
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       401:
+     *         description: Credenciais inválidas
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     *       500:
+     *         description: Erro interno do servidor
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Error'
+     */
     router.post('/login', async (request: Request, response: Response) => {
         try {
             const { body } = request
@@ -353,7 +606,7 @@ export default (app: Express) => {
 
             const novoComentario = await new CommentController().create({
                 post_id: Number(postId),
-                user_id: userId,
+                author_id: userId,
                 comentario: comentario
             })
             response.status(201).json(novoComentario)

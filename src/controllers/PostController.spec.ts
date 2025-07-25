@@ -22,7 +22,7 @@ describe('PostController', () => {
 
     describe('read', () => {
         it('deve retornar uma lista de posts', async () => {
-            const mockPosts = [{ id: 1, title: 'Teste', content: 'Conteúdo' }];
+            const mockPosts: Post[] = [{ id: 1, title: 'Teste', content: 'Conteúdo', author_id: 1 }];
             mockDb.queryPosts.mockResolvedValue(mockPosts);
 
             const result = await postController.read({});
@@ -57,7 +57,7 @@ describe('PostController', () => {
 
     describe('delete', () => {
         it('deve deletar um post existente', async () => {
-            const mockPost = { id: 1, title: 'Teste', content: 'Conteúdo' };
+            const mockPost: Post = { id: 1, title: 'Teste', content: 'Conteúdo', author_id: 1 };
             mockDb.queryPosts.mockResolvedValue([mockPost]);
             mockDb.deletePost.mockResolvedValue({});
 
@@ -77,11 +77,14 @@ describe('PostController', () => {
 
     describe('update', () => {
         it('deve atualizar um post existente', async () => {
-            const mockPost = { id: 1, title: 'Teste', content: 'Conteúdo' };
+            const mockPost: Post = { id: 1, title: 'Teste', content: 'Conteúdo', author_id: 1 };
             const updatedData = { title: 'Atualizado', content: 'Conteúdo', author_id: 1 };
             mockDb.queryPosts.mockResolvedValue([mockPost]);
-            mockDb.updatePost.mockResolvedValue({ ...mockPost, ...updatedData });
+            mockDb.updatePost.mockResolvedValue();
 
+            // Mock the second queryPosts call (after update) to return updated data
+            mockDb.queryPosts.mockResolvedValueOnce([mockPost]).mockResolvedValueOnce([{ ...mockPost, ...updatedData }]);
+            
             const result = await postController.update(1, updatedData);
             expect(result).toEqual({ ...mockPost, ...updatedData });
             expect(mockDb.queryPosts).toHaveBeenCalledWith({ id: 1 });
@@ -92,11 +95,11 @@ describe('PostController', () => {
             mockDb.queryPosts.mockResolvedValue([]);
 
             await expect(postController.update(1, { title: 'Atualizado' }))
-                .rejects.toThrow('Falha ao atualizar post');
+                .rejects.toThrow('Post não encontrado para atualização');
         });
 
         it('deve lançar erro ao falhar a atualização', async () => {
-            const mockPost = { id: 1, title: 'Teste', content: 'Conteúdo' };
+            const mockPost: Post = { id: 1, title: 'Teste', content: 'Conteúdo', author_id: 1 };
             mockDb.queryPosts.mockResolvedValue([mockPost]);
             mockDb.updatePost.mockRejectedValue(new Error('Erro de banco'));
 
