@@ -193,26 +193,6 @@ export default (app: Express) => {
             const { id } = request.params
             const data = request.body
             
-            // Validate author field if present
-            if (data.author !== undefined) {
-                if (typeof data.author === 'string') {
-                    // Try to convert string to number
-                    const authorId = parseInt(data.author, 10);
-                    if (isNaN(authorId)) {
-                        response.status(400).json({ 
-                            error: 'Campo author deve ser um ID numérico válido do usuário' 
-                        });
-                        return;
-                    }
-                    data.author = authorId;
-                } else if (typeof data.author !== 'number') {
-                    response.status(400).json({ 
-                        error: 'Campo author deve ser um ID numérico válido do usuário' 
-                    });
-                    return;
-                }
-            }
-            
             // Validate author_id field if present
             if (data.author_id !== undefined) {
                 if (typeof data.author_id === 'string') {
@@ -264,13 +244,13 @@ export default (app: Express) => {
      *               content:
      *                 type: string
      *                 description: Conteúdo do post
-     *               author:
+     *               author_id:
      *                 type: integer
      *                 description: ID do autor do post
      *             required:
      *               - title
      *               - content
-     *               - author
+     *               - author_id
      *     responses:
      *       200:
      *         description: Post criado com sucesso
