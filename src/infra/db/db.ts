@@ -269,24 +269,31 @@ export class DB {
     }
 
     async queryCommentsByPostId(postId: number): Promise<Comment[]> {
-        const query = `
-            SELECT comentarios.id, comentarios.post_id, comentarios.user_id, 
-                   comentarios.comentario, comentarios.resposta_id, comentarios.created_at
-            FROM comentarios
-            WHERE comentarios.post_id = ?
-            ORDER BY comentarios.created_at DESC
-        `;
-        const values = [postId];
+    const query = `
+        SELECT
+            comentarios.id,
+            comentarios.post_id,
+            comentarios.user_id AS author_id,
+            comentarios.comentario,
+            comentarios.resposta_id,
+            comentarios.created_at,
+            usuarios.nome AS author
+        FROM comentarios
+        JOIN usuarios ON comentarios.user_id = usuarios.id
+        WHERE comentarios.post_id = ?
+        ORDER BY comentarios.created_at DESC
+    `;
+    const values = [postId];
 
-        return new Promise((resolve, reject) => {
-            this.db.all(query, values, (error: Error | null, rows: any[]) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(rows);
-            });
+    return new Promise((resolve, reject) => {
+        this.db.all(query, values, (error: Error | null, rows: any[]) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(rows);
         });
-    }
+    });
+}
 
     async deleteComment(id: number): Promise<Comment> {
         const query = 'SELECT id, post_id, user_id, comentario, resposta_id, created_at FROM comentarios WHERE id = ?';
